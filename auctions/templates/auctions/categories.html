@@ -1,0 +1,93 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <style>
+        .card-img-top {
+            height: 200px;
+            border-radius: 10px;
+        }
+
+        .col {
+            padding-top: 50px;
+        }
+
+        .card {
+            background: linear-gradient(to right, #b25fff, #82e7db);
+            border-color: rgba(255, 255, 255, 0);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 0 20px rgb(92, 92, 92);
+            transition:  transform 0.5s, box-shadow 0.5s;
+        }
+
+        .card:hover {
+            background: linear-gradient(to right, #c637d6, #6f4bdc);
+            box-shadow: 0 0 25px rgb(233, 133, 255);
+            transform: scale(1.02);
+            cursor: pointer;
+        }
+
+    </style>
+
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+   <div style="padding-bottom: 30px;" class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col">
+        <a style="text-decoration: none; color: black;" href = "{% url 'category' 'Electronics' %}">
+      <div class="card">
+        <img src="{% static 'auctions/elec.png' %}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 style="text-align: center;font-family:cursive;" class="card-title">Electronics</h5>
+        </div>
+      </div></a>
+    </div>
+    <div class="col">
+        <a style="text-decoration: none; color: black;" href = "{% url 'category' 'Fashion' %}">
+        <div class="card">
+          <img src="{% static 'auctions/fashion.png' %}" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 style="text-align: center;font-family:cursive;" class="card-title">Fashion</h5>
+          </div>
+        </div></a>
+      </div>
+      <div class="col">
+        <a style="text-decoration: none; color: black;" href = "{% url 'category' 'Home' %}">
+        <div class="card">
+          <img src="{% static 'auctions/home.png' %}" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 style="text-align: center;font-family:cursive;" class="card-title">Home</h5>
+          </div>
+        </div></a>
+      </div>
+      <div class="col">
+        <a style="text-decoration: none; color: black;" href = "{% url 'category' 'Toys' %}">
+        <div class="card">
+          <img src="{% static 'auctions/toys.png' %}" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 style="text-align: center;font-family:cursive;" class="card-title">Toys</h5>
+          </div>
+        </div></a>
+      </div>
+      <div class="col">
+        <a style="text-decoration: none; color: black;" href = "{% url 'category' 'Other' %}">
+        <div class="card">
+          <img src="{% static 'auctions/other.png' %}" class="card-img-top" alt="...">
+          <div class="card-body">
+            <h5 style="text-align: center;font-family:cursive;" class="card-title">Other</h5>
+          </div>
+        </div>
+        </a>
+      </div>
+  </div>
+
+{% endblock %}

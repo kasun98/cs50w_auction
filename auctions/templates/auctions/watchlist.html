@@ -1,0 +1,134 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <style>
+        .index-div {
+            width: 90%;
+            height: 200px;
+            display: inline-flex;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .index-div:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.01);
+        }
+
+        .index-img {
+            width: 400px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .index-img img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 100%;
+            width: auto;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+        }
+
+        .item-box {
+            color: #000;
+        }
+
+        .item-box:hover {
+            color: darkblue;
+        }
+
+        .item-details {
+            flex: 1;
+            text-align: left;
+            overflow: hidden;
+        }
+        
+        .item-right-edge {
+            display: flex;
+            justify-content: flex-end;
+            width: 100px; /* Adjust as needed */
+        }
+
+        .remove-button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 1s ease;
+        }
+
+        .remove-button:hover {
+            background-color: #891111;
+        }
+
+        .remove-button-form {
+            display: flex;
+        }
+
+
+
+    </style>
+
+    <h3>Watchlist</h3>
+
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+   {%for item in basket_items %}
+   <a class="item-box" href="{% url 'listings' item.item_id.id %}">
+    <div class="index-div">
+        <div class="index-img">
+            {% if item.item_id.img_url %}
+            <img src="{{item.item_id.img_url}}">
+            {% else %}
+            <img src="{% static 'auctions/stock.png' %}">
+            {% endif %}
+        </div>
+        <div class="item-details">
+            <h4>{{item.item_id.name}}</h4>
+            <h6>Price: ${{item.item_id.start_bid}}</h6>
+            {% if item.current_bid and item.item_id.status == "Y" %}
+            <h5 style="color: rgb(44, 116, 13); font-weight: bold;">Current Bid: ${{item.current_bid|floatformat:2}}</h5>
+            {% elif item.current_bid and item.item_id.status == "N" %}
+            <h5 style="color: rgb(173, 49, 24); font-weight: bold;">Sold at ${{item.current_bid|floatformat:2}}</h5>
+            {% endif %}
+            {% if item.item_id.category %}
+            <h8 style="color: rgb(128, 127, 127); font-size: 14px">Category: {{item.item_id.category}}</h8>
+            <br>
+            {% endif %}
+            <h8 style="color: rgb(128, 127, 127); font-size: 13px">Created {{item.item_id.created_at}}</h8>
+        </div>
+        
+        <div class="item-right-edge">
+            <form class="remove-button-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="remove_button">
+                <input type="hidden" name="item_id" value="{{ item.item_id.id }}">
+                <button class="remove-button" type="submit"><i class="fa fa-trash-o" style="font-size:26px;color:rgb(255, 255, 255)"></i></button>
+            </form>
+        </div>
+        
+    </div>
+    </a>
+   {% empty %}
+   <div class="alert alert-warning" role="alert">Your watchlist is empty</div>
+   {% endfor %}
+
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Auctions{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <nav class="navbar bg-body-tertiary">
+            <div style="justify-content: left;" class="container-fluid">
+              <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'auctions/auction.png' %}" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+                
+              </a>
+              <h1 style="font-family: cursive;">MEGA</h1>
+              <h1 style="color: rgb(138, 28, 28); padding-left: 5px; font-weight: bold;">SALE</h1>
+            </div>
+          </nav>
+        
+        <div>
+            {% if user.is_authenticated %}
+            <div class="alert alert-primary" role="alert">Signed in as <strong>{{ user.username }}</strong></div>
+            {% else %}
+            <div class="alert alert-warning" role="alert">Signed in to bid</div>
+            {% endif %}   
+        </div>
+        
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'categories' %}">Categories</a>
+            </li>
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    {% if basket %}
+                    <a style="padding-right: 3px; display: inline-flex;" class="nav-link" href="{% url 'watchlist' %}">Watchlist <a style="font-size: small; border-radius: 5px; padding: 3px; color: white; background-color: rgb(40, 39, 39);">{{basket}}</a></a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'list' %}">Create Listing</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+                
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+            {% endif %}
+        </ul>
+        
+        <hr>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>

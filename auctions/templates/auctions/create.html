@@ -1,0 +1,68 @@
+
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <h2>List Your Item !</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+    <style>
+        @media (min-width : 620px) {
+
+            .div-1 {
+                display: list-item;
+            }
+        }
+
+        @media (min-width : 619.99px) {
+            .div-1 {
+                display: flex;
+            }
+        }
+
+    </style>
+
+    <div class="div-1">
+        <form style="padding: 20px; width: 90%; min-width: 300px; max-width: 750px;" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Title:</label>
+                <input class="form-control" autofocus type="text" name="name" placeholder="Title for the listing" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea class="form-control" type="text" name="description" placeholder="Item Description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="start_bid">Starting Bid:</label>
+                <input class="form-control" type="number" step="0.01" name="start_bid" placeholder="Starting Bid (USD)" required>
+            </div>
+            <div class="form-group">
+                <label for="img_url">Image URL:</label>
+                <input class="form-control" type="url" name="img_url" placeholder="URL for image">
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select class="form-control" name="category" id="category" >
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Home">Home</option>
+                    <option value="Toys">Toys</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <input class="btn btn-primary" type="submit" value="List Item">
+        </form>
+
+        <div style="padding: 20px; "><img style="border-radius: 20px; min-width: 250px; box-shadow: 0 10px 10px rgba(0, 0, 0, 0.593);" src="{% static 'auctions/list1.jpg' %}" alt="Image" class="img-fluid"></div>
+        
+    </div>
+    
+
+    
+
+{% endblock %}

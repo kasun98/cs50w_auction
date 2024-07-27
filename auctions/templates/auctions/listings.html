@@ -1,0 +1,226 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <style>
+        .index-div {
+            width: 100%;
+            height: 200px;
+            display: inline-flex;
+            padding: 10px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .index-div-bid {
+            width: 100%;
+            height: auto;
+            display: inline-flex;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .index-img {
+            width: 100%;
+            overflow: hidden;
+            position: relative;   
+        }
+
+        .index-img img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            height: 100%;
+            width: auto;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+        }
+
+        .custom-button {
+            border: 1px solid rgba(255, 255, 255, 0);
+            background-color: rgb(135, 135, 135);
+            color: white;
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .custom-button:hover {
+            background-color: rgba(255, 255, 255, 0);
+        }
+
+        .custom-button:focus {
+            outline: none;
+        }  
+    </style>
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <h2>{{item.name}}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="watchlist_button">
+        {% if user.is_authenticated %}
+            {% if watchlist == none %}
+            <button style="background-color: rgb(12, 115, 57);" class="custom-button">
+                Add to Watchlist
+            </button>
+            {% elif watchlist.watch == "Y" %}
+            <button style="background-color: rgb(60, 60, 60);" class="custom-button">
+                Remove from Watchlist
+            </button>
+            {% endif %}
+        {% endif %}
+        {% if item.status == "N" %}
+        <a style="background-color: rgb(115, 12, 12); color: white; padding: 6px;" class="custom-button">Sold</a>
+        {% elif item.status == "Y" %}
+        <a style="background-color: rgb(12, 115, 57); color: white; padding: 6px;" class="custom-button">Active</a>
+        {% endif %}
+    </form>
+
+    <div class="index-div">
+         <div class="index-img">
+            {% if item.img_url %}
+            <img src="{{item.img_url}}">
+            {% else %}
+            <img src="{% static 'auctions/stock.png' %}">
+            {% endif %}
+         </div>
+    </div>
+    <div class="index-div-bid">
+        <div class="item-details">
+            <h7>{{item.description}}</h7><br>
+            <h5>Starting Price: ${{item.start_bid}}</h5>
+            {% if item.status == "N" %}
+                {% if Bid.current_bidder_id == user %}
+                <h3 class="d-inline" style="color: rgb(248, 248, 248); background-color: rgb(115, 12, 12); border-radius: 5px;
+                padding: 3px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.593);">Final Bid: ${{ Bid.current_bid }}</h3>
+                <h6 style="margin-left: 3px; font-family: sans-serif;" class="d-inline">You won the auction!</h6>
+                {% else %}
+                <h3 class="d-inline" style="color: rgb(248, 248, 248); background-color: rgb(115, 12, 12); border-radius: 5px;
+                padding: 3px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.593);">Final Bid: ${{ Bid.current_bid }}</h3>
+                <h6 style="margin-left: 3px; font-family: sans-serif;" class="d-inline">Item sold to {{ Bid.current_bidder_id }}</h6>
+                {% endif %}
+            {% elif Bid %}
+            <h3 class="d-inline" style="color: rgb(248, 248, 248); background-color: rgb(12, 115, 57); border-radius: 5px;
+             padding: 3px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.593);">Current Bid: ${{ Bid.current_bid }}</h3>
+            <h6 style="margin-left: 3px; font-family: sans-serif;" class="d-inline">by {{ Bid.current_bidder_id }}</h6>
+            {% else %}
+            <h4>Current Bid: ${{item.start_bid}}</h4>
+            {% endif %}
+        </div>
+   </div>
+   
+   {% if user.is_authenticated %}
+        {% if Bid %}
+        <h7 style="font-size: 13px;">{{Bid.n_bids}} bid(s) so far.</h7>
+            {% if Bid.current_bidder_id == user %}
+            <h7 style="font-size: 13px;">Your bid is the current bid.</h7>
+            {% endif %}
+        {% else %}
+        <h7 style="font-size: 13px;">No bid(s) so far</h7>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {% if item.status == "Y" %}
+            <div class="form-group">
+                <input class="form-control"  type="number" step="0.01" name="bid" min="{{min_bid}}" value="{{min_bid}}">
+            </div>
+            <input class="btn btn-primary" name="form_type" type="submit" value="Place Bid">
+            {% endif %}
+            {% if item.owner == user and item.status == "Y" %}
+            <input class="btn btn-primary" name="form_type" type="submit" value="Finish Sale">
+            <input class="btn btn-primary" name="form_type" type="submit" value="Delete Item">
+            {% endif %}
+        </form>
+    {% else %}
+        <br>
+        <h7>Log-in to bid!</h7>
+    {% endif %}
+    <br>
+    <div class="index-div-bid">
+        <div class="item-details">
+            <h4>Details</h4>
+            <ul>
+                <li>Listed by: <h5 style="color: blue; display: inline-flex;">{{item.owner}}</h5></li>
+                {% if item.category %}
+                <li>Category: {{item.category}}</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Comment Section -->
+    <section>
+        <div style="margin: 0; margin-top: 0 !important;" class="container my-5 py-5">
+          <div  class="row d-flex justify-content-center">
+            <div class="col-md-12 col-lg-10">
+              <div class="card text-body">
+                <div class="card-footer py-3 border-0" style="background-color: #f8f9fa;">
+                    {% if user.is_authenticated %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex flex-start w-100">
+                            <img class="rounded-circle shadow-1-strong me-3"
+                            src="https://res.cloudinary.com/dlb65j6di/image/upload/v1719927946/profile-user_64572_orn5w2.png" alt="avatar" width="40"
+                            height="40" />
+                            <div style="margin-left: 5px;" data-mdb-input-init class="form-outline w-100">
+                            <textarea class="form-control" name="comment" id="textAreaExample" rows="4"
+                            style="background: #fff;" placeholder="Type your comments here" required></textarea>
+                            </div>
+                        </div>
+                        <div class="float-end mt-2 pt-1">
+                        <input name="form_type" type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-sm" value="Post Comment">
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="card-body p-4">
+                    <h4 class="mb-0">Recent comments</h4>
+                    
+                </div>
+                {% for comment in comments %}
+                <div class="card-body p-4">
+                  
+                  <div class="d-flex flex-start">
+                    <img class="rounded-circle shadow-1-strong me-3"
+                      src="https://res.cloudinary.com/dlb65j6di/image/upload/v1719927946/profile-user_64572_orn5w2.png" alt="avatar" width="60"
+                      height="60" />
+                    <div style="margin-left: 10px;">
+                      <h6 class="fw-bold mb-1">{{comment.commenter_id}}</h6>
+                      <div class="d-flex align-items-center mb-3">
+                        <p class="mb-0">
+                            {{comment.time}}
+                        </p>
+                        <a style="margin-left: 5px;" class="link-muted"><i class="fas fa-heart ms-2"></i></a>
+                      </div>
+                      <p class="mb-0">
+                        {{comment.comment}}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <hr class="my-0" />
+
+                {% empty %}
+                <div class="card-body p-4">
+                    <h5 class="mb-0">No comments</h5>
+                </div>
+
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    <!-- Comment Section -->
+{% endblock %}
